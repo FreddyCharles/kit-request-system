@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Request</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 5px 0;
+        }
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Request an Item</h1>
+        <form id="request-item-form">
+            <label for="item_id">Item ID:</label>
+            <input type="number" id="item_id" required>
+            <label for="requester_name">Your Name:</label>
+            <input type="text" id="requester_name" required>
+            <button type="button" onclick="requestItem()">Request Item</button>
+        </form>
+        
+        <h2>Current Inventory</h2>
+        <table id="inventory-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                    <th>Requests</th>
+                    <th>Requesters</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-list">
+                <!-- Inventory items will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function requestItem() {
+            const item = {
+                item_id: parseInt(document.getElementById('item_id').value),
+                requester_name: document.getElementById('requester_name').value
+            };
+            fetch('/request_item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(item)
+            }).then(response => response.json()).then(data => {
+                alert(data.message);
+                loadInventory();
+            }).catch(error => {
+                alert('An error occurred: ' + error.message);
+            });
+        }
+
+        function loadInventory() {
+            fetch('/inventory')
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    data.forEach(item => {
+                        html += `<tr>
+                                    <td>${item[0]}</td>
+                                    <td>${item[1]}</td>
+                                    <td>${item[2]}</td>
+                                    <td>${item[3]}</td>
+                                    <td>${item[4]}</td>
+                                    <td>${item[5]}</td>
+                                    <td>${item[6]}</td>
+                                    <td>${item[7]}</td>
+                                 </tr>`;
+                    });
+                    document.getElementById('inventory-list').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading inventory:', error);
+                });
+        }
+
+        window.onload = loadInventory;
+    </script>
+</body>
+</html>
