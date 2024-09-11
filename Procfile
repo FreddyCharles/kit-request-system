@@ -1,1 +1,1 @@
-web: python3 webapp.py
+python3 /workspace/app/webapp.py
